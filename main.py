@@ -2,15 +2,15 @@
 
 board = [' ' for x in range(10)]
 
-
+# Insert value into array
 def insertLetter(letter, pos):
     board[pos] = letter
 
-
+# Check if space is open
 def spaceIsFree(pos):
     return board[pos] == ' '
 
-
+# Print the board
 def printBoard(board):
     print('   |   |')
     print(' ' + board[1] + ' | ' + board[2] + ' | ' + board[3])
@@ -24,7 +24,7 @@ def printBoard(board):
     print(' ' + board[7] + ' | ' + board[8] + ' | ' + board[9])
     print('   |   |')
 
-
+# Check if there is a winner
 def is_winner(bo, le):
     return (bo[7] == le and bo[8] == le and bo[9] == le) or (bo[4] == le and bo[5] == le and bo[6] == le) or (
                 bo[1] == le and bo[2] == le and bo[3] == le) or (bo[1] == le and bo[4] == le and bo[7] == le) or (
@@ -32,7 +32,7 @@ def is_winner(bo, le):
                        bo[3] == le and bo[6] == le and bo[9] == le) or (
                        bo[1] == le and bo[5] == le and bo[9] == le) or (bo[3] == le and bo[5] == le and bo[7] == le)
 
-
+# Player move
 def player_move():
     run = True
     while run:
@@ -50,7 +50,7 @@ def player_move():
         except:
             print('Please type a number!')
 
-
+# Computer move
 def comp_move():
     possibleMoves = [x for x, letter in enumerate(board) if letter == ' ' and x != 0]
     move = 0
@@ -86,21 +86,21 @@ def comp_move():
 
     return move
 
-
+# Select random space
 def select_random(li):
     import random
     ln = len(li)
     r = random.randrange(0, ln)
     return li[r]
 
-
+# Check if board is full
 def is_board_full(board):
     if board.count(' ') > 1:
         return False
     else:
         return True
 
-
+# The main game
 def game():
     print('Welcome to Tic Tac Toe!')
     printBoard(board)
