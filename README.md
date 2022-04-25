@@ -1,0 +1,1 @@
+The user is X and goes first and the python program is O. The user alternate turns with the python program until there is a winner or a tie game. 
