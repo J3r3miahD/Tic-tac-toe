@@ -1,142 +1,167 @@
+import random
+
 # Tic Tac Toe game in python
 
-board = [' ' for x in range(10)]
+board = [' ' for _ in range(10)]  # Board initialization
+
 
 # Insert value into array
-def insertLetter(letter, pos):
-    board[pos] = letter
+def insert_letter(letter, pos, board_data):
+    board_data[pos] = letter
+    return board_data
 
-# Check if space is open
-def spaceIsFree(pos):
-    return board[pos] == ' '
 
-# Print the board
-def printBoard(board):
+# Check if space is free
+def space_is_free(pos, board_data):
+    return board_data[pos] == ' '
+
+
+# Print the board with available positions
+def print_board(board_data):
     print('   |   |')
-    print(' ' + board[1] + ' | ' + board[2] + ' | ' + board[3])
+    for i in range(1, 10, 3):
+        print(' ' + (board_data[i] if board_data[i] != ' ' else str(i)) +
+              ' | ' + (board_data[i + 1] if board_data[i + 1] != ' ' else str(i + 1)) +
+              ' | ' + (board_data[i + 2] if board_data[i + 2] != ' ' else str(i + 2)))
+        if i < 7:
+            print('-----------')
     print('   |   |')
-    print('-----------')
-    print('   |   |')
-    print(' ' + board[4] + ' | ' + board[5] + ' | ' + board[6])
-    print('   |   |')
-    print('-----------')
-    print('   |   |')
-    print(' ' + board[7] + ' | ' + board[8] + ' | ' + board[9])
-    print('   |   |')
+
 
 # Check if there is a winner
-def is_winner(bo, le):
-    return (bo[7] == le and bo[8] == le and bo[9] == le) or (bo[4] == le and bo[5] == le and bo[6] == le) or (
-                bo[1] == le and bo[2] == le and bo[3] == le) or (bo[1] == le and bo[4] == le and bo[7] == le) or (
-                       bo[2] == le and bo[5] == le and bo[8] == le) or (
-                       bo[3] == le and bo[6] == le and bo[9] == le) or (
-                       bo[1] == le and bo[5] == le and bo[9] == le) or (bo[3] == le and bo[5] == le and bo[7] == le)
+def is_winner(board_data, le):
+    return (board_data[7] == le and board_data[8] == le and board_data[9] == le) or \
+        (board_data[4] == le and board_data[5] == le and board_data[6] == le) or \
+        (board_data[1] == le and board_data[2] == le and board_data[3] == le) or \
+        (board_data[1] == le and board_data[4] == le and board_data[7] == le) or \
+        (board_data[2] == le and board_data[5] == le and board_data[8] == le) or \
+        (board_data[3] == le and board_data[6] == le and board_data[9] == le) or \
+        (board_data[1] == le and board_data[5] == le and board_data[9] == le) or \
+        (board_data[3] == le and board_data[5] == le and board_data[7] == le)
+
 
 # Player move
-def player_move():
-    run = True
-    while run:
+def player_move(board_data):
+    while True:
         move = input('Please select a position to place an \'X\' (1-9): ')
         try:
             move = int(move)
-            if move > 0 and move < 10:
-                if spaceIsFree(move):
-                    run = False
-                    insertLetter('X', move)
+            if 0 < move < 10:
+                if space_is_free(move, board_data):
+                    board_data = insert_letter('X', move, board_data)
+                    break
                 else:
                     print('Sorry, this space is occupied!')
             else:
-                print('Please type a number within the range!')
-        except:
-            print('Please type a number!')
+                print('Please type a number within the range 1-9!')
+        except ValueError:
+            print('Please type a valid number!')
+    return board_data
+
 
 # Computer move
-def comp_move():
-    possibleMoves = [x for x, letter in enumerate(board) if letter == ' ' and x != 0]
+def comp_move(board_data):
+    possible_moves = [x for x, letter in enumerate(board_data) if letter == ' ' and x != 0]
     move = 0
 
+    # Check for winning or blocking moves
     for let in ['O', 'X']:
-        for i in possibleMoves:
-            boardCopy = board[:]
-            boardCopy[i] = let
-            if is_winner(boardCopy, let):
+        for i in possible_moves:
+            board_copy = board_data[:]
+            board_copy[i] = let
+            if is_winner(board_copy, let):
                 move = i
                 return move
 
-    cornersOpen = []
-    for i in possibleMoves:
-        if i in [1, 3, 7, 9]:
-            cornersOpen.append(i)
-
-    if len(cornersOpen) > 0:
-        move = select_random(cornersOpen)
+    # Check for available corners
+    corners_open = [i for i in possible_moves if i in [1, 3, 7, 9]]
+    if corners_open:
+        move = select_random(corners_open)
         return move
 
-    if 5 in possibleMoves:
-        move = 5
+    # Check if the center is available
+    if 5 in possible_moves:
+        return 5
+
+    # Check for available edges
+    edges_open = [i for i in possible_moves if i in [2, 4, 6, 8]]
+    if edges_open:
+        move = select_random(edges_open)
         return move
-
-    edgesOpen = []
-    for i in possibleMoves:
-        if i in [2, 4, 6, 8]:
-            edgesOpen.append(i)
-
-    if len(edgesOpen) > 0:
-        move = select_random(edgesOpen)
 
     return move
 
+
 # Select random space
 def select_random(li):
-    import random
-    ln = len(li)
-    r = random.randrange(0, ln)
-    return li[r]
+    return random.choice(li)
+
 
 # Check if board is full
-def is_board_full(board):
-    if board.count(' ') > 1:
-        return False
-    else:
-        return True
+def is_board_full(board_data):
+    return board_data.count(' ') == 1
+
 
 # The main game
 def game():
     print('Welcome to Tic Tac Toe!')
-    printBoard(board)
 
-    while not (is_board_full(board)):
-        if not (is_winner(board, 'O')):
-            player_move()
-            printBoard(board)
+    # Instructions for the player
+    print("""
+    How to play Tic Tac Toe:
+
+    1. The game is played on a 3x3 grid. You will play as 'X', and the computer plays as 'O'.
+    2. The positions on the board are numbered from 1 to 9, starting from the top left, going across each row.
+       Here is the board layout for reference:
+
+        1 | 2 | 3
+       -----------
+        4 | 5 | 6
+       -----------
+        7 | 8 | 9
+
+    3. To make your move, input the number (1-9) corresponding to the position where you want to place your 'X'.
+    4. The computer will then make its move as 'O'.
+    5. The first player to align 3 of their marks (vertically, horizontally, or diagonally) wins.
+    6. The game ends in a tie if all positions are filled and no one wins.
+    """)
+
+    board_data = board[:]  # Copy of the board to work with inside the game
+    print_board(board_data)
+
+    while not is_board_full(board_data):
+        if not is_winner(board_data, 'O'):
+            board_data = player_move(board_data)
+            print_board(board_data)
         else:
             print('Sorry, O\'s won this time!')
             break
 
-        if not (is_winner(board, 'X')):
-            move = comp_move()
+        if not is_winner(board_data, 'X'):
+            move = comp_move(board_data)
             if move == 0:
                 print('Tie Game!')
             else:
-                insertLetter('O', move)
-                print('Computer placed an \'O\' in position', move, ':')
-                printBoard(board)
+                board_data = insert_letter('O', move, board_data)
+                print(f'Computer placed an \'O\' in position {move}:')
+                print_board(board_data)
         else:
-            print('X\'s won this time! Good Job!')
+            print('X\'s won this time! Good job!')
             break
 
-    if is_board_full(board):
+    if is_board_full(board_data):
         print('Tie Game!')
 
 
-
 if __name__ == '__main__':
+    game()  # Start the first game
+
+    # Ask if the player wants to play again after the game ends
     while True:
-        answer = input('Do you want to play again? (Y/N): ')
-        answer = answer.lower()
-        if answer == 'y' or answer == 'yes':
-            board = [' ' for x in range(10)]
+        answer = input('Do you want to play again? (Y/N): ').lower()
+        if answer in ['y', 'yes']:
+            board = [' ' for _ in range(10)]  # Reset the board
             print('-----------------------------------')
-            game()
+            game()  # Start a new game
         else:
-            break
+            break  # Exit the game
